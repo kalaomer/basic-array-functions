@@ -1,0 +1,13 @@
+{
+    "name": "kalaomer/basic_array_functions",
+    "description": "Array functions for PHP",
+    "authors": [
+        {
+            "name": "Ömer Kala",
+            "email": "kalaomer@hotmail.com"
+        }
+    ],
+    "require": {
+
+    }
+}
