@@ -1,0 +1,4 @@
+/tests/private
+/tests/private/*
+/.idea
+/.idea/*

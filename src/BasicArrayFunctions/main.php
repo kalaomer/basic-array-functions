@@ -1,6 +1,23 @@
 <?php
 
 /**
+ * Array path işlemlerinde kullanılılan ayıraç.
+ */
+if(! defined('ARRAY_PATH_DELIMITER'))
+	define('ARRAY_PATH_DELIMITER', '.');
+
+/**
+ * Array path'inin bir üstün adresini döndürür.
+ */
+if(! function_exists("array_parent_path"))
+{
+    function array_parent_path($path)
+    {
+        return array_slice( explode(ARRAY_PATH_DELIMITER, $path), 0, -1 );
+    }
+}
+
+/**
  * @version 1.0.0
  * Merge more arrays by values.
  */
@@ -16,16 +33,12 @@ if (!function_exists("array_val_joiner"))
 		$template = array_shift( $args );
 		$array = array_shift( $args );
 
-		/*
-		 * Eğer gönderilenler array değilse çık!
-		 */
+		// Eğer gönderilenler array değilse çık!
 		if( !is_array( $template ) || !is_array( $array ) )
 			return false;
 
-		/*
-		 * Eğer gönderilenler iki elamamdan fazlaysa;
-		 * fonksiyonu içten içe yönlendir ve array'ı topla.
-		 */
+		// Eğer gönderilenler iki elamamdan fazlaysa;
+		// fonksiyonu içten içe yönlendir ve array'ı topla.
 		if( count( $args ) > 0 )
 		{
 			array_unshift( $args, $array );
@@ -34,9 +47,7 @@ if (!function_exists("array_val_joiner"))
 				return false;
 		}
 
-		/*
-		 * Arrayda olmayanlar template'den aktarılıyor.
-		 */
+		// Arrayda olmayanlar template'den aktarılıyor.
 		foreach( $template as $key=>$value )
 		{
 			if( array_search( $value, $array ) === false )
@@ -54,7 +65,6 @@ if (!function_exists("array_val_joiner"))
  * @version 1.0.0
  *
  * Gönderilen taslak array ile normal array'ı kıyaslar ve normal array'a eksik olan key'leri ekler.
- *
  * Birden fazla array gönderilebilir. En baskın array en son yazılan array'dır!!!
  */
 if (!function_exists("array_key_joiner"))
@@ -64,23 +74,17 @@ if (!function_exists("array_key_joiner"))
 		$args = func_get_args();
 
 		if( count( $args ) < 2 )
-			return trigger_error("Argument miss!");
+            throw new \Exception("Argument miss!");
 
-		/*
-		 * Template üstüne veri eklenecek olan array.
-		 */
+		// Template üstüne veri eklenecek olan array.
 		$template = array_shift( $args );
 
-		/*
-		 * Eğer gönderilenler array değilse çık!
-		 */
+		// Eğer gönderilenler array değilse çık!
 		if( !is_array( $template ) )
-			return trigger_error("Argument is not Array!");
+			throw new \Exception("Argument is not Array!");
 
-		/*
-		 * Eğer gönderilenler iki elamamdan fazlaysa;
-		 * fonksiyonu içten içe yönlendir ve primary değişkenini tek bir array haline getir.
-		 */
+		// Eğer gönderilenler iki elamamdan fazlaysa;
+		// fonksiyonu içten içe yönlendir ve primary değişkenini tek bir array haline getir.
 		if( count( $args ) > 1 )
 		{
 			$primary = call_user_func_array( __FUNCTION__, $args );
@@ -90,7 +94,7 @@ if (!function_exists("array_key_joiner"))
 		else
 		{
 			if( !is_array($primary = array_shift( $args )) )
-				return trigger_error("Argument is not Array!");
+                throw new \Exception("Argument is not Array!");
 		}
 
 		// Primary'daki bütün veriler Template'e aktarılıyor.
@@ -111,17 +115,13 @@ if (!function_exists("array_key_joiner_recursive"))
 		$args = func_get_args();
 
 		if( count( $args ) < 2 )
-			return trigger_error("Argument miss!");
+            throw new \Exception("Argument miss!");
 
-		/*
-		 * Template üstüne veri eklenecek olan array.
-		 */
+		// Template üstüne veri eklenecek olan array.
 		$template = array_shift( $args );
 
-		/*
-		 * Eğer gönderilenler iki elamamdan fazlaysa;
-		 * fonksiyonu içten içe yönlendir ve primary değişkenini tek bir array haline getir.
-		 */
+		// Eğer gönderilenler iki elamamdan fazlaysa;
+		// fonksiyonu içten içe yönlendir ve primary değişkenini tek bir array haline getir.
 		if( count( $args ) > 1 )
 		{
 			$primary = call_user_func_array( __FUNCTION__, $args );
@@ -131,17 +131,15 @@ if (!function_exists("array_key_joiner_recursive"))
 		else
 		{
 			if( !is_array($primary = array_shift( $args )) )
-				return trigger_error("Argument is not Array!");
+                throw new \Exception("Argument is not Array!");
 		}
 
 		foreach ($primary as $key => $val)
 		{
-			/*
-			 * Eğer eşitlenecek öğe Array ise ve
-			 * Template array'ında bu değer var ise ve
-			 * Template array'ında bu key de array bulunduruyorsa
-			 * Fonksiyonu iç içe çağır.
-			 */
+			// Eğer eşitlenecek öğe Array ise ve
+			// Template array'ında bu değer var ise ve
+			// Template array'ında bu key de array bulunduruyorsa
+			// Fonksiyonu iç içe çağır.
 			if( is_array($val) && isset( $template[ $key ] ) && is_array( $template[ $key ] ) )
 				$template[ $key ] = call_user_func_array( __FUNCTION__, array( $template[$key], $primary[$key] ) );
 			else
@@ -153,12 +151,12 @@ if (!function_exists("array_key_joiner_recursive"))
 }
 
 /**
- * @version 1.0.0
+ * @version 1.0.1
  * Gelişmiş bir veri çekme fonksiyonudur.
  */
-if (!function_exists("array_get_by_dot"))
+if (!function_exists("array_get"))
 {
-	function array_get_by_dot( &$data, $path )
+	function array_get( &$data, $path )
 	{
 
 		$args = func_get_args();
@@ -170,62 +168,70 @@ if (!function_exists("array_get_by_dot"))
 		}
 
 		//	Yol Parçalanıyor.
-		$path = explode(".", $path);
+		$path = explode(ARRAY_PATH_DELIMITER, $path);
 
 		//	Hedef olarak ile data'yı seç.
-		$target_data = &$data;
+		$target_data = $data;
 
-		//	Yolları tek tek git.
-		foreach ($path as $key => $way)
-		{
-			
-			//	Eğer gidilecek yol yok ise..
-			if (!isset($target_data[$way]))
-			{				
-				//	default değerin basılması isteniyor ise..
-				if ( isset($default_return) )
-				{
-					return array_set_by_dot( $data, implode(".", $path), $default_return );
-				}
-				//	default basılması isstenmiyorsa ise..
-				else
-				{
-					//	FALSE
-					return false;
-				}
-			}
-			//	Yolu aşama aşama git ve hedefi daralt.
-			$target_data = &$target_data[$way];
-		}
+        try
+        {
+            //	Yolları tek tek git.
+            foreach ($path as $way)
+            {
+                //	Yolu aşama aşama git ve hedefi daralt.
+                $target_data = $target_data[$way];
+            }
+        }
+        // Eğer istenen öğre bulunamaz ise hata alanına girecek.
+        catch (\Exception $e)
+        {
+            //	default değerin basılması isteniyor ise..
+            if ( isset($default_return) )
+            {
+                return array_set( $data, implode(ARRAY_PATH_DELIMITER, $path), $default_return );
+            }
+            //	default basılması isstenmiyorsa ise..
+            else
+            {
+                throw new \Exception('Path can\'t find! Path:' . impode(ARRAY_PATH_DELIMITER, $path));
+            }
+        }
+
 
 		return $target_data;
 	}
 }
 
 /**
- * @version 1.0.0
+ * @version 1.0.1
  *
  * Array'ın path'deki yerini değiştiren fonksiyondur.
  */
-if (!function_exists("array_set_by_dot"))
+if (!function_exists("array_set"))
 {
-	function array_set_by_dot( &$data, $path, $val )
+	function array_set( &$data, $path, $val )
 	{
-		
-		//	Yol Parçalanıyor.
-		$path = explode(".", $path);
-		
-		$target_data = &$data;
+        return array_key_joiner_recursive($data, array_patch($path, $val));
+	}
+}
 
-		foreach ($path as $way)
+/**
+ | @version 1.0.0
+ | @author Ömer Kala <kalaomer@hotmail.com>
+ | Array'a patch oluşturur.
+ */
+if(! function_exists("array_patch"))
+{
+	function array_patch($path, $value)
+	{
+		$result = $value;
+
+		foreach(array_reverse( explode(ARRAY_PATH_DELIMITER, $path) ) as $pathPart)
 		{
-			if (!isset($target_data[$way]))
-				$target_data[ $way ] = [];
-		
-			$target_data = &$target_data[$way];
+			$result = Array($pathPart => $result);
 		}
 
-		return $target_data = $val;
+		return $result;
 	}
 }
 
@@ -234,9 +240,9 @@ if (!function_exists("array_set_by_dot"))
  * @author Ömer Kala <kalaomer@hotmail.com>
  * Array'ın path'deki yerini değiştiren fonksiyondur.
  */
-if (!function_exists("array_del_by_dot"))
+if (!function_exists("array_del"))
 {
-	function array_del_by_dot( &$data, $path )
+	function array_del( &$data, $path )
 	{
 		
 		//	Yol Parçalanıyor.
@@ -249,7 +255,7 @@ if (!function_exists("array_del_by_dot"))
 
 		foreach ($path as $way)
 		{
-			if (!isset($target_data[$way]))
+			if (!array_key_exists($target_data, $way))
 				return;
 		
 			$target_data = &$target_data[$way];
@@ -337,25 +343,4 @@ if (!function_exists("array_order_by")) {
 		return array_values($sorted_array);
 
 	}
-}
-
-/**
- * Yollanan EasyArray nesnesi ya da Array'ı çıktılar.
- * Çıktılama stili olarak desteklenen türlerden biri belirtilir.
- * @param array
- * @return HTML
-*/
-function array_dump( array $mainArray )
-{
-
-	$args = func_get_args();
-
-	$args = array_slice($args, 1);
-
-	foreach ($args as $arg)
-	{
-		var_dump($arg);
-	}
-
-	return var_dump($mainArray);	
 }
