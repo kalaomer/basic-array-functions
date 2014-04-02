@@ -187,8 +187,7 @@ if (!function_exists("array_get"))
 			//	default değerin basılması isteniyor ise..
 			if ( isset($default_return) )
 			{
-				$data = array_set( $data, implode(ARRAY_PATH_DELIMITER, $path), $default_return );
-				return [$default_return, $data];
+				return $default_return;
 			}
 			//	default basılması isstenmiyorsa ise..
 			else

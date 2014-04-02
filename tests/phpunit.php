@@ -62,7 +62,7 @@ class BasicArrayFunctionsTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals("blabla", \array_get($array, "foo.sub.source"));
 
-		$this->assertEquals(["newValue", \array_set($array, "foo.sub.new", "newValue")], \array_get($array, "foo.sub.new", "newValue"));
+		$this->assertEquals("newValue", \array_get($array, "foo.sub.new", "newValue"));
 	}
 
 	/**
